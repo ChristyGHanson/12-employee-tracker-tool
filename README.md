@@ -58,3 +58,12 @@ You will be committing a file that contains your database credentials. Make sure
 
 You might also want to make your queries asynchronous. MySQL2 exposes a .promise() function on Connections to upgrade an existing non-Promise connection to use Promises. To learn more and make your queries asynchronous, refer to the npm documentation on MySQL2
 https://www.npmjs.com/package/mysql2
+
+use inquirer to ask questions
+set up files with schema - tables, db using SQL.
+use npm init
+
+write a seeds folder
+write the index.js with inquirer
+use mysql connection - refer back to module 12. boilerplate code.
+user sees options, views departments, roles, employees, add row, employee, department, update employee's role, etc.
