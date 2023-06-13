@@ -1,7 +1,5 @@
 -- create the db here
--- review module 12
 DROP DATABASE IF EXISTS employee_db;
-
 CREATE DATABASE employee_db;
 
 -- create the 3 tables here
@@ -9,7 +7,7 @@ USE employee_db;
 
 CREATE TABLE department(
     id INT PRIMARY KEY,
-    name VARCHAR(30) NOT NULL
+    dept_name VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE role(
