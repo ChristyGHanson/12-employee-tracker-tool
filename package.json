@@ -14,7 +14,8 @@
   "license": "ISC",
   "homepage": "git@github.com:ChristyGHanson/12-employee-tracker-tool.git",
   "dependencies": {
-    "inquirer": "^8.2.4",
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.5",
     "mysql2": "^3.3.5"
   }
 }
