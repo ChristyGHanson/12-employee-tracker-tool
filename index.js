@@ -11,12 +11,12 @@ const menuQuestion = [
     }
 ];
 
-// TO DO - CASES: add case for "dept," add case for "update employee role"
 // Display Menu Choices.
 function displayMenu() {
+    // First it prints the choices in a menu.
     inquirer.prompt(menuQuestion).then((answers) => {
-        console.log('This is the answer variable: ', answers);
-        // Switch tests what we're answering. gets answer from the array stored in menuQuestion.
+        // console.log('This is the answer variable: ', answers);
+        // Switch to the answers in the menu in menuQuestion. 
         switch (answers.menu) {
             case 'View all departments':
                 SQL.displayDep().then(() => {
@@ -35,33 +35,37 @@ function displayMenu() {
                 break;
             case 'Add employee':
                 // in the same file
-                displayEmpQuestions();
+                addEmployee();
                 break;
             case 'Add role':
                 // in the same file
                 displayRoleQuestions();
                 break;
             case 'Add department':
-                displayDeptQuestions();
+                addDepartment();
                 break;
             case 'Update employee role':
-                updateEmpRole();
+                updateEmployeeRole();
                 break;
             case 'quit':
+                process.exit();
                 break;
 
         }
     });
 };
 
-// Display Employee Questions
-function displayEmpQuestions() {
+// User prompts for adding new employees
+function addEmployee() {
+    // local variables that will store arrays
     var roleList = [];
     var managerList = [];
+    // Query from sqlRequest.js file.
     SQL.getRoleTitles().then((result) => {
         roleList = result;
         SQL.getEmployeeNames().then((result) => {
             managerList = result;
+            // User responds to each question here.
             const newEmployeeQuestions = [
                 {
                     type: 'input',
@@ -77,12 +81,14 @@ function displayEmpQuestions() {
                     type: 'list',
                     message: "What is the employee's role?",
                     name: 'role',
+                    // array stored in roleList variable
                     choices: roleList
                 },
                 {
                     type: 'list',
                     message: "Who is the employee's manager?",
                     name: 'manager',
+                    // array stored in managerList
                     choices: managerList
                 }
             ];
@@ -100,7 +106,6 @@ function displayEmpQuestions() {
 
 // Display role questions
 function displayRoleQuestions() {
-    // need 1 list
     var deptList = [];
     SQL.getDepartmentNames().then((result) => {
         deptList = result;
@@ -108,40 +113,34 @@ function displayRoleQuestions() {
         const newRoleQuestions = [
             {
                 type: 'input',
-                message: "What is the employee's first name?",
-                name: 'first_name',
+                message: "What is the new role?",
+                name: 'new_role',
             },
             {
                 type: 'input',
-                message: "What is the employee's last name?",
-                name: 'last_name',
+                message: "What is the salary?",
+                name: 'salary',
             },
             {
                 type: 'list',
-                message: "What is the employee's role?",
-                name: 'role',
-                choices: roleList
-            },
-            {
-                type: 'list',
-                message: "Who is the employee's manager?",
-                name: 'manager',
-                choices: managerList
+                message: "What is the department?",
+                name: 'dept_name',
+                choices: deptList
             }
+
         ];
-        // asks the questions. pass in newEmployeeQuestions
-        // callback function 'data' has the answers to the questions
         inquirer.prompt(newRoleQuestions).then((data) => {
-            SQL.addEmployee(data.first_name, data.last_name, data.role, data.manager).then(() => {
+            // insert the names from the array
+            SQL.addRole(data.new_role, data.salary, data.dept_name).then(() => {
                 // Goes and displays the menu questions again. This goes at the end of everything.
                 displayMenu();
-            })
-        })
+            });
+        });
     });
 };
 
-// Display department questions
-function displayDeptQuestions() {
+// Questions for adding a new department with user string input.
+function addDepartment() {
     var deptQuestions = [];
     SQL.displayDep().then((result) => {
         deptQuestions = result;
@@ -149,49 +148,55 @@ function displayDeptQuestions() {
             {
                 type: 'input',
                 message: "Enter the department you want to add: ",
-                name: 'dept_name',
+                name: 'dept_name'
             }
         ];
         // asks the questions. pass in newEmployeeQuestions
         // callback function 'data' has the answers to the questions
         inquirer.prompt(displayDepartmentQuestions).then((data) => {
-            SQL.addEmployee(data.first_name, data.last_name, data.role, data.manager).then(() => {
+            // dept_name comes from the array above.
+            SQL.addNewDepartment(data.dept_name).then(() => {
                 // Goes and displays the menu questions again. This goes at the end of everything.
                 displayMenu();
-            })
+            });
         });
     });
 };
 
 
 //  please continue with this one 6/19/23 tuesday - Juan delgado
-function updateEmpRole() {
+function updateEmployeeRole() {
+    // 2 arrays here
     var displayAllEmployees = [];
     var displayAllRoles = [];
     // need query. need list of all roles
-    // which employee to update--needs list of all employees.
+    // which employee to update? I need the list of all employees from the db.
+    // Query for getEmployeeNames to store in displayAllEmployees
     SQL.getEmployeeNames().then((result) => {
         displayAllEmployees = result;
+        // Query for getRoleTitles to store in displayAllRoles
         SQL.getRoleTitles().then((result) => {
             displayAllRoles = result;
+            // object in the array is store in questions.
             const questions = [{
                 type: 'list',
-                message: 'Select an employee whose role you want to update: ',
-                name: 'employeeList',
-                choices: displayAllEmployees,
+                message: 'Select an existing employee whose role you want to update: ',
+                name: 'employeeName',
+                choices: displayAllEmployees
             },
             {
                 type: 'list',
                 message: 'What is the new role for the employee? ',
-                name: 'roleList',
-                choices: displayAllRoles,
+                name: 'role',
+                choices: displayAllRoles
             }
             ];
             inquirer.prompt(questions).then((data) => {
-                console.log(data);
-                UPDATE data.employeeList;
-                SETasdf;
-                WEB asdf;
+                // console.log(data);
+                SQL.updateEmployee(data.role, data.employeeName).then(() => {
+                    // display menu again after updating employee role.
+                    displayMenu();
+                })
 
             })
         });

@@ -23,9 +23,9 @@ function displayDep() {
                 console.table(data);
                 resolve();
             }
-        })
+        });
     });
-}
+};
 
 function displayRoles() {
     return new Promise((resolve, reject) => {
@@ -38,14 +38,13 @@ function displayRoles() {
                 console.table(data);
                 resolve();
             }
-        })
+        });
     });
-}
+};
 
 function displayEmployees() {
     return new Promise((resolve, reject) => {
         // query using SQL
-        // Specificity
         db.query(`SELECT employee.id AS ID, CONCAT (employee.first_name,' ',employee.last_name) AS Name, role.title AS Role, role.salary AS Salary, CONCAT(manager.first_name,' ',manager.last_name) AS Manager FROM employee JOIN role ON employee.role_id=role.id JOIN department ON role.department_id=department.id LEFT JOIN employee manager ON manager.id=employee.manager_id`, (error, data) => {
             if (error) {
                 reject(error);
@@ -53,9 +52,9 @@ function displayEmployees() {
                 console.table(data);
                 resolve();
             }
-        })
+        });
     });
-}
+};
 
 // get db information as array
 function getEmployeeNames() {
@@ -72,8 +71,8 @@ function getEmployeeNames() {
                 });
                 resolve(names);
             }
-        })
-    })
+        });
+    });
 };
 
 function getRoleTitles() {
@@ -90,8 +89,8 @@ function getRoleTitles() {
                 });
                 resolve(titles);
             }
-        })
-    })
+        });
+    });
 };
 
 function getDepartmentNames() {
@@ -108,11 +107,11 @@ function getDepartmentNames() {
                 });
                 resolve(deptNames);
             }
-        })
-    })
+        });
+    });
 };
 
-//  Create new function for addEmployee, which will come from the index.js file inside displayEmpQuestions
+//  Create new function for addEmployee, which will come from the index.js file inside displayEmployeeQuestions
 function addEmployee(first_name, last_name, title, manager_name) {
     return new Promise((resolve, reject) => {
         // SQL - ARRAYAGG turns it into array
@@ -137,16 +136,16 @@ function addEmployee(first_name, last_name, title, manager_name) {
                                 resolve();
 
                             }
-                        })
-                    }
-                })
+                        });
+                    };
+                });
 
-            }
-        })
-    })
+            };
+        });
+    });
 };
 
-// add ROLE, convert dept name to and id 
+// add ROLE, convert dept name to an id 
 function addRole(title, salary, department_name) {
     return new Promise((resolve, reject) => {
         // SQL - ARRAYAGG turns it into array
@@ -171,5 +170,57 @@ function addRole(title, salary, department_name) {
         })
     })
 };
+
+//  Insert a string value into the department table (dept_name)
+function addNewDepartment(dept_name) {
+    return new Promise((resolve, reject) => {
+        // INSERT data into the db table from index.js
+        db.query(`INSERT INTO department (dept_name) VALUE("${dept_name}");`, (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                console.log(`Added ${dept_name} to department db`);
+                resolve();
+            }
+        })
+    });
+};
+
+
+
+function updateEmployee(title, employee_name) {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT id FROM role WHERE title='${title}';`, (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                // insert into role id in the db
+                var role_id = result[0].id;
+                // Made a query.
+                db.query(`SELECT id FROM employee WHERE CONCAT(employee.first_name,' ',employee.last_name)='${employee_name}';`, (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        // Saves ID number in employee_id. Corresponds to the existing employee selected from the list.
+                        var employee_id = result[0].id;
+                        // specify an id for a role so it updates just that role.
+                        db.query(`UPDATE employee SET role_id=${role_id} WHERE id=${employee_id}`, (error, result) => {
+                            if (error) {
+                                reject(error);
+                            } else {
+                                console.log(`Updated ${employee_name} in employee db`);
+                                resolve();
+
+                            }
+                        });
+                    };
+                });
+
+            };
+        });
+    });
+};
+
+
 // Exporting to index.js
-module.exports = { displayDep, displayRoles, displayEmployees, getEmployeeNames, getRoleTitles, getDepartmentNames, addEmployee, addRole };
+module.exports = { displayDep, displayRoles, displayEmployees, getEmployeeNames, getRoleTitles, getDepartmentNames, addEmployee, addRole, addNewDepartment, updateEmployee };
